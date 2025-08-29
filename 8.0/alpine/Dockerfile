@@ -105,5 +105,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
-# Test change for issue #92
 CMD ["valkey-server"]
