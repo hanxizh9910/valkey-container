@@ -21,3 +21,4 @@ You should build and publish a new Docker Image after a new major, minor or patc
 6. Update the `dockerhub-description.md` with the updated tags in your private Docker Hub registry and the Dockerfile links.
 7. Publish a PR with these changes. For example: [#8](https://github.com/valkey-io/valkey-container/pull/8)
 8. Once the PR is merged, Sit back, relax and enjoy looking at your creation getting published to the official Docker Hub page.
+
