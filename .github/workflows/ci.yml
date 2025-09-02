@@ -32,7 +32,9 @@ jobs:
           elif [[ ("${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/mainline") || ("${{ github.event_name }}" == "pull_request" && "${{ github.base_ref }}" == "mainline") ]]; then
             # For pushes to mainline or PRs targeting mainline, only build changed versions
             if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-              changed_files=$(git diff --name-only origin/mainline...HEAD)
+              # For PRs, compare against the merge base
+              git fetch origin ${{ github.base_ref }}
+              changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
             else
               changed_files=$(git diff --name-only HEAD~1 HEAD)
             fi
