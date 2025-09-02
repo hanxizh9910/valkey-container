@@ -106,3 +106,4 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
 CMD ["valkey-server"]
+
