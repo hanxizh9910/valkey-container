@@ -92,7 +92,7 @@ RUN set -eux; \
 		libgcc \
 	;
 
-# Install valkey built earlier added comment to test fix for issue 92
+# Install valkey built earlier
 COPY --from=build /usr/local /usr/local
 RUN mkdir /data && \
 	chown valkey:valkey /data && \
@@ -105,5 +105,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
-# Test PR detection for 8.0 alpine - issue #92
 CMD ["valkey-server"]
