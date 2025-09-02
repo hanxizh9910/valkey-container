@@ -105,4 +105,5 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
+# Test PR detection for 8.0 alpine - issue #92
 CMD ["valkey-server"]
