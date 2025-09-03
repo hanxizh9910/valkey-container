@@ -41,7 +41,7 @@ jobs:
             if echo $changed_files | grep -qE "^(versions\.json|[0-9]+\.[0-9]+/|unstable/)"; then
               changed_versions=$(echo $changed_files | grep -oE "^[0-9]+\.[0-9]+|^unstable" | sort -u | tr '\n' '|' | sed 's/|$//')
               if [[ -n "$changed_versions" ]]; then
-                strategy=$(jq -c --arg versions "$changed_versions" '{"fail-fast": .["fail-fast"],"matrix":{"include":[ .matrix.include[]|select(.name | test($versions))]}}' <<<"$strategy")
+                strategy=$(jq -c --arg versions "$changed_versions" '{"fail-fast": .["fail-fast"],"matrix":{"include":[ .matrix.include[]|select(.meta.entries[0].directory | test($versions))]}}' <<<"$strategy")
               fi
             else
               strategy='{"fail-fast": false, "matrix": {"include": []}}'
