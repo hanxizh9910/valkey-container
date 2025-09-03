@@ -94,7 +94,7 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-# Install valkey built earlier Added a comment to test
+# Install valkey built earlier
 COPY --from=build /usr/local /usr/local
 RUN mkdir /data && \
 	chown valkey:valkey /data && \
