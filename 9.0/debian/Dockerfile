@@ -78,6 +78,7 @@ RUN set -eux; \
 FROM base
 
 ENV VALKEY_VERSION 9.0.0-rc1
+hahahaha
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN set -eux; \
