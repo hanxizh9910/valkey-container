@@ -104,6 +104,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
+        if: |
+          ${{ secrets.DOCKERHUB_USERNAME != '' }} &&
+          ${{ secrets.DOCKERHUB_TOKEN != '' }} && 
+          ${{ github.ref == "refs/heads/mainline" }}
         uses: docker/login-action@v3
         with:
           registry: docker.io
@@ -111,6 +115,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
+      # We would not log in anywhere where we are not pushing 
+        if: |
+          ${{ secrets.DOCKERHUB_USERNAME != '' }} &&
+          ${{ secrets.DOCKERHUB_TOKEN != '' }} && 
+          ${{ github.ref == "refs/heads/mainline" }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -121,7 +130,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
-          push: true
+          push: ${{ github.ref == "refs/heads/mainline" }}
           tags: >-
             ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
