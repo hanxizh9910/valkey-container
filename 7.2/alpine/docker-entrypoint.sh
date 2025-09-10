@@ -13,7 +13,7 @@ if [ "$1" = 'valkey-server' -a "$(id -u)" = '0' ]; then
 	exec setpriv --reuid=valkey --regid=valkey --clear-groups -- "$0" "$@"
 fi
 
-# set an appropriate umask (if one isn't set already)
+# set an appropriate umask (if one isn't set already) 
 um="$(umask)"
 if [ "$um" = '0022' ]; then
 	umask 0077
