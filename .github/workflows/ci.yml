@@ -112,6 +112,13 @@ jobs:
           ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REPOSITORY_ALIAS }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
           echo "ecr_tags=$ecr_tags" >> $GITHUB_OUTPUT
 
+      - name: Debug PUBLISH_IMAGE
+        run: |
+          echo "PUBLISH_IMAGE value: '${{ env.PUBLISH_IMAGE }}'"
+          echo "github.ref: ${{ github.ref }}"
+          echo "Has AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}"
+          echo "Has AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY != '' }}"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
