@@ -91,7 +91,7 @@ RUN set -eux; \
 		openssl \
 		libgcc \
 	;
-
+test
 # Install valkey built earlier
 COPY --from=build /usr/local /usr/local
 RUN mkdir /data && \

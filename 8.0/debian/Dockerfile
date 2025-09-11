@@ -89,7 +89,7 @@ RUN set -eux; \
 		libssl3t64 \
 	; \
 	rm -rf /var/lib/apt/lists/*
-
+test
 # Install valkey built earlier
 COPY --from=build /usr/local /usr/local
 RUN mkdir /data && \
