@@ -130,19 +130,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Get ECR login token
-        if: env.PUBLISH_IMAGE == 'true'
-        id: ecr-token
-        run: |
-          echo "token=$(aws ecr-public get-login-password --region us-east-1)" >> $GITHUB_OUTPUT
-
       - name: Login to Amazon ECR Public Gallery
         if: env.PUBLISH_IMAGE == 'true'
-        uses: docker/login-action@v3
-        with:
-          registry: public.ecr.aws
-          username: AWS
-          password: ${{ steps.ecr-token.outputs.token }}
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 
       - name: Build and push
         uses: docker/build-push-action@v5
