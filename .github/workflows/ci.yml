@@ -106,7 +106,7 @@ jobs:
         id: modify_tags
         run: |
           original_tags="${{ toJson(matrix.meta.entries[0].tags) }}"
-          ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REPOSITORY_ALIAS }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
+          ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REPOSITORY_ALIAS }}\/valkey-test/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
           echo "ecr_tags=$ecr_tags" >> $GITHUB_OUTPUT
 
       - name: Debug PUBLISH_IMAGE
