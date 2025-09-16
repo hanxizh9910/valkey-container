@@ -7,10 +7,7 @@ on:
     - cron: '0 0 * * *'
 
 env:
-  PUBLISH_IMAGE: |
-    ${{ secrets.DOCKERHUB_USERNAME != '' &&
-    secrets.DOCKERHUB_TOKEN != '' &&
-    github.ref == 'refs/heads/mainline' }}
+  PUBLISH_IMAGE: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' && github.ref == 'refs/heads/mainline' }}
   PUBLISH_ECR: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' && github.ref == 'refs/heads/mainline' }}
 
 defaults:
