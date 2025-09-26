@@ -139,7 +139,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
-      # We would not log in anywhere where we are not pushing 
+        # Don't log in if we are not pushing changes
         if: env.PUBLISH_IMAGE
         uses: docker/login-action@v3
         with:
