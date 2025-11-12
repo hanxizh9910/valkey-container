@@ -107,6 +107,7 @@ jobs:
     name: ${{ matrix.name }} - Build and push
     runs-on: ${{ matrix.os }}
     permissions:
+      id-token: write
       contents: read
       packages: write
     steps:
@@ -153,6 +154,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: us-east-1
+          web-identity-token-file: ${{ github.token }}
 
       - name: Login to Amazon ECR Public Gallery
         if: env.PUBLISH_ECR == 'true'
