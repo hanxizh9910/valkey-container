@@ -13,8 +13,7 @@ on:
         type: string
 
 env:
-  PUBLISH_IMAGE: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' && github.ref == 'refs/heads/mainline' }}
-  PUBLISH_ECR: ${{ secrets.AWS_ROLE_TO_ASSUME != '' && github.ref == 'refs/heads/mainline' }}
+  PUBLISH_IMAGE: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' && secrets.AWS_ROLE_TO_ASSUME != '' && github.ref == 'refs/heads/mainline' }}
 
 defaults:
   run:
@@ -149,39 +148,28 @@ jobs:
           password: ${{ github.token }}
 
       - name: Configure AWS credentials via OIDC
-        if: env.PUBLISH_ECR == 'true'
+        if: env.PUBLISH_IMAGE
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: us-east-1
 
       - name: Login to Amazon ECR Public Gallery
-        if: env.PUBLISH_ECR == 'true'
+        if: env.PUBLISH_IMAGE
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 
-      - name: Build and push to Docker Hub and Github Container Registry
+      - name: Build and push to Docker Hub, Github Container Registry, and Amazon ECR
         uses: docker/build-push-action@v5
         with:
           file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
           push: ${{ env.PUBLISH_IMAGE }}
           tags: >-
-            ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }}
+            ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }},${{ steps.modify_tags.outputs.ecr_tags }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           provenance: false
           load: false
-
-      - name: Build and push to Amazon ECR
-        if: env.PUBLISH_ECR == 'true'
-        uses: docker/build-push-action@v5
-        with:
-          file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
-          push: true
-          tags: ${{ steps.modify_tags.outputs.ecr_tags }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          provenance: false
-          load: false
-
+          
   update-dockerhub-description:
     if: |
       (github.event_name == 'push' &&
