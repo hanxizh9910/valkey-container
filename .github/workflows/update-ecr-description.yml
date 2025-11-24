@@ -31,10 +31,8 @@ jobs:
       - name: Read ECR description markdown
         id: read_md
         run: |
-          DESCRIPTION=$(cat ecr-description.md)
-          echo "description<<EOF" >> $GITHUB_OUTPUT
-          echo "$DESCRIPTION" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          DESCRIPTION=$(jq -Rs . < ecr-description.md)  # -R raw input, -s slurp
+          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
 
       # 3. Update BOTH "About" + "Usage" fields on ECR Public
       - name: Update ECR repository description
@@ -43,6 +41,6 @@ jobs:
             --registry-id $(aws sts get-caller-identity --query Account --output text) \
             --repository-name valkey \
             --catalog-data "{
-              \"aboutText\": \"${{ steps.read_md.outputs.description }}\",
-              \"usageText\": \"${{ steps.read_md.outputs.description }}\"
+              \"aboutText\": ${{ steps.read_md.outputs.description }},
+              \"usageText\": ${{ steps.read_md.outputs.description }}
             }"
