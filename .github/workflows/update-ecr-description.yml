@@ -1,0 +1,48 @@
+name: Update ECR Public Description
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      AWS_ROLE_TO_ASSUME:
+        required: true
+      ECR_REPOSITORY_ALIAS:
+        required: true
+
+jobs:
+  update-ecr-description:
+    name: Update ECR Public Description
+    permissions:
+      id-token: write     # Required for OIDC!
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Configure AWS via OIDC (just like our ECR image push)
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+
+      # 2. Read your markdown file
+      - name: Read ECR description markdown
+        id: read_md
+        run: |
+          DESCRIPTION=$(cat ecr-description.md)
+          echo "description<<EOF" >> $GITHUB_OUTPUT
+          echo "$DESCRIPTION" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # 3. Update BOTH "About" + "Usage" fields on ECR Public
+      - name: Update ECR repository description
+        run: |
+          aws ecr-public put-repository-catalog-data \
+            --registry-id $(aws sts get-caller-identity --query Account --output text) \
+            --repository-name valkey \
+            --catalog-data "{
+              \"aboutText\": \"${{ steps.read_md.outputs.description }}\",
+              \"usageText\": \"${{ steps.read_md.outputs.description }}\"
+            }"
