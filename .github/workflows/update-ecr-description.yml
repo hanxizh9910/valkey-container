@@ -32,15 +32,13 @@ jobs:
         id: read_md
         run: |
           DESCRIPTION=$(jq -Rs . < ecr-description.md)  # -R raw input, -s slurp
-          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+          echo "$DESCRIPTION" > description.json
 
       # 3. Update BOTH "About" + "Usage" fields on ECR Public
       - name: Update ECR repository description
         run: |
+          DESC=$(<description.json)
           aws ecr-public put-repository-catalog-data \
             --registry-id $(aws sts get-caller-identity --query Account --output text) \
             --repository-name valkey \
-            --catalog-data "{
-              \"aboutText\": ${{ steps.read_md.outputs.description }},
-              \"usageText\": ${{ steps.read_md.outputs.description }}
-            }"
+            --catalog-data "{\"aboutText\": $DESC, \"usageText\": $DESC}"
