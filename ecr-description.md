@@ -8,6 +8,3 @@ Include instructions on how to pull and run the image.
 
 Example:
 
-```bash
-docker pull <ECR_URL>/valkey:latest
-docker run <ECR_URL>/valkey:latest
