@@ -26,30 +26,36 @@ jobs:
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-east-1
-        
+
+    - name: Parse README.md and extract usage/about text
+      id: parsed
+      run: |
+        python .github/scripts/parse_readme.py dockerhub-description.md > parsed.json
+        echo "parsed=$(cat parsed.json | jq -c .)" >> $GITHUB_OUTPUT
+
     - name: Update ECR Public catalog data
       run: |
-        # Get the repository name from secret
         REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
         
-        echo "Repository name: $REPO_NAME"
-        
-        # Create catalog data with extracted repository name
+        ABOUT=$(echo "${{ steps.parsed.outputs.parsed }}" | jq -r '.about')
+        USAGE=$(echo "${{ steps.parsed.outputs.parsed }}" | jq -r '.usage')
+
+        ABOUT_JSON=$(echo "$ABOUT" | jq -Rs .)
+        USAGE_JSON=$(echo "$USAGE" | jq -Rs .)
+
         cat > catalog-data.json << EOF
         {
           "repositoryName": "$REPO_NAME",
           "catalogData": {
             "description": "Auto-updated container image",
-            "aboutText": "## About\n\nThis is an automatically updated container image.",
-            "usageText": "## Usage\n\nThis is an automatically updated container image.",
+            "aboutText": $ABOUT_JSON,
+            "usageText": $USAGE_JSON,
             "operatingSystems": ["Linux"]
           }
         }
         EOF
-        
+
         echo "Updating ECR catalog data..."
         aws ecr-public put-repository-catalog-data \
           --cli-input-json file://catalog-data.json \
           --region us-east-1
-          
-        echo "Done!"
