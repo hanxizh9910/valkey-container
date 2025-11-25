@@ -36,23 +36,23 @@ jobs:
     - name: Update ECR Public catalog data
       run: |
         REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
-        
+
         ABOUT="${{ fromJson(steps.parsed.outputs.parsed).about }}"
         USAGE="${{ fromJson(steps.parsed.outputs.parsed).usage }}"
 
         ABOUT_JSON=$(echo "$ABOUT" | jq -Rs .)
         USAGE_JSON=$(echo "$USAGE" | jq -Rs .)
 
-        cat > catalog-data.json <<'EOF'
-        {
-          "repositoryName": "'"$REPO_NAME"'",
-          "catalogData": {
-            "description": "Auto-updated container image",
-            "aboutText": '"$ABOUT_JSON"',
-            "usageText": '"$USAGE_JSON"',
-            "operatingSystems": ["Linux"]
+        cat > catalog-data.json <<-EOF
+          {
+            "repositoryName": "$REPO_NAME",
+            "catalogData": {
+              "description": "Auto-updated container image",
+              "aboutText": $ABOUT_JSON,
+              "usageText": $USAGE_JSON,
+              "operatingSystems": ["Linux"]
+            }
           }
-        }
         EOF
 
         echo "Updating ECR catalog data..."
