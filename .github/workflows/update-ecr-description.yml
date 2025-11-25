@@ -5,7 +5,7 @@ on:
     secrets:
       AWS_ROLE_TO_ASSUME:
         required: true
-      ECR_REPOSITORY_ALIAS:
+      ECR_REPOSITORY_NAME:
         required: true
 
 permissions:
@@ -21,11 +21,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Debug repository info
-      run: |
-        echo "Repository alias from secret: ${{ secrets.ECR_REPOSITORY_ALIAS }}"
-        echo "Expected ARN: arn:aws:ecr-public::ACCOUNTNUMBER:repository/${{ secrets.ECR_REPOSITORY_ALIAS }}"
-          
     - name: Configure AWS credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -34,17 +29,10 @@ jobs:
         
     - name: Update ECR Public catalog data
       run: |
-        # Extract just the repository name from the alias
-        FULL_ALIAS="${{ secrets.ECR_REPOSITORY_ALIAS }}"
-        REPO_NAME=$(basename "$FULL_ALIAS")
-
-        # Debug without showing the secret
-        echo "Length of full alias: ${#FULL_ALIAS}"
-        echo "Length of extracted name: ${#REPO_NAME}"
-        echo "Expected repository name: valkey-test"
-        echo "Do they match? $([ "$REPO_NAME" = "valkey-test" ] && echo "YES" || echo "NO")"
-        echo "Full alias: $FULL_ALIAS"
-        echo "Extracted repository name: $REPO_NAME"
+        # Get the repository name from secret
+        REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
+        
+        echo "Repository name: $REPO_NAME"
         
         # Create catalog data with extracted repository name
         cat > catalog-data.json << EOF
