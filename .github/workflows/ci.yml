@@ -183,7 +183,7 @@ jobs:
     uses: ./.github/workflows/update-ecr-description.yml
     secrets:
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-      ECR_REPOSITORY_ALIAS: ${{ secrets.ECR_REPOSITORY_ALIAS }}
+      ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
   
   # update-dockerhub-description:
   #   if: |
