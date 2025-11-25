@@ -37,7 +37,7 @@ jobs:
         # Create simple dummy catalog data
         cat > catalog-data.json << EOF
         {
-          "repositoryName": "${{ secrets.ECR_REPOSITORY_ALIAS }}",
+          "repositoryName": "valkey-test",
           "catalogData": {
             "description": "Auto-updated container image",
             "aboutText": "## About\n\nThis is an automatically updated container image.",
