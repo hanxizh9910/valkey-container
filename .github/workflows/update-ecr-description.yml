@@ -30,7 +30,7 @@ jobs:
     - name: Parse README.md and extract usage/about text
       id: parsed
       run: |
-        python .github/scripts/parse_readme.py dockerhub-description.md > parsed.json
+        python .github/scripts/extract_sections.py dockerhub-description.md > parsed.json
         echo "parsed=$(cat parsed.json | jq -c .)" >> $GITHUB_OUTPUT
 
     - name: Update ECR Public catalog data
