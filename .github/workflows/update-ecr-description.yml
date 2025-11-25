@@ -30,15 +30,15 @@ jobs:
     - name: Parse README.md and extract usage/about text
       id: parsed
       run: |
-        python .github/scripts/extract_sections.py dockerhub-description.md > parsed.json
+        python3 .github/scripts/extract_sections.py dockerhub-description.md > parsed.json
         echo "parsed=$(cat parsed.json | jq -c .)" >> $GITHUB_OUTPUT
 
     - name: Update ECR Public catalog data
       run: |
         REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
         
-        ABOUT=$(echo "${{ steps.parsed.outputs.parsed }}" | jq -r '.about')
-        USAGE=$(echo "${{ steps.parsed.outputs.parsed }}" | jq -r '.usage')
+        ABOUT="${{ fromJson(steps.parsed.outputs.parsed).about }}"
+        USAGE="${{ fromJson(steps.parsed.outputs.parsed).usage }}"
 
         ABOUT_JSON=$(echo "$ABOUT" | jq -Rs .)
         USAGE_JSON=$(echo "$USAGE" | jq -Rs .)
