@@ -43,13 +43,13 @@ jobs:
         ABOUT_JSON=$(echo "$ABOUT" | jq -Rs .)
         USAGE_JSON=$(echo "$USAGE" | jq -Rs .)
 
-        cat > catalog-data.json << EOF
+        cat > catalog-data.json <<'EOF'
         {
-          "repositoryName": "$REPO_NAME",
+          "repositoryName": "'"$REPO_NAME"'",
           "catalogData": {
             "description": "Auto-updated container image",
-            "aboutText": $ABOUT_JSON,
-            "usageText": $USAGE_JSON,
+            "aboutText": '"$ABOUT_JSON"',
+            "usageText": '"$USAGE_JSON"',
             "operatingSystems": ["Linux"]
           }
         }
