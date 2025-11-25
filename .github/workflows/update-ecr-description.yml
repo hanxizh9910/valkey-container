@@ -1,7 +1,6 @@
 name: Update ECR Public Description
 
 on:
-  workflow_dispatch:
   workflow_call:
     secrets:
       AWS_ROLE_TO_ASSUME:
@@ -9,36 +8,43 @@ on:
       ECR_REPOSITORY_ALIAS:
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  update-ecr-description:
-    name: Update ECR Public Description
-    permissions:
-      id-token: write     # Required for OIDC!
-      contents: read
+  update-ecr-catalog:
     runs-on: ubuntu-latest
-
+    name: Update ECR Public Catalog Data
+    
     steps:
-      - uses: actions/checkout@v4
-
-      # 1. Configure AWS via OIDC (just like our ECR image push)
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: us-east-1
-
-      # 2. Read your markdown file
-      - name: Read ECR description markdown
-        id: read_md
-        run: |
-          DESCRIPTION=$(jq -Rs . < ecr-description.md)  # -R raw input, -s slurp
-          echo "$DESCRIPTION" > description.json
-
-      # 3. Update BOTH "About" + "Usage" fields on ECR Public
-      - name: Update ECR repository description
-        run: |
-          DESC=$(<description.json)
-          aws ecr-public put-repository-catalog-data \
-            --registry-id $(aws sts get-caller-identity --query Account --output text) \
-            --repository-name valkey \
-            --catalog-data "{\"aboutText\": $DESC, \"usageText\": $DESC}"
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Configure AWS credentials via OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        aws-region: us-east-1
+        
+    - name: Update ECR Public catalog data
+      run: |
+        # Create simple dummy catalog data
+        cat > catalog-data.json << EOF
+        {
+          "repositoryName": "${{ secrets.ECR_REPOSITORY_ALIAS }}",
+          "catalogData": {
+            "description": "Auto-updated container image",
+            "aboutText": "## About\n\nThis is an automatically updated container image.",
+            "usageText": "## Usage\n\nThis is an automatically updated container image.",
+            "operatingSystems": ["Linux"]
+          }
+        }
+        EOF
+        
+        echo "Updating ECR catalog data..."
+        aws ecr-public put-repository-catalog-data \
+          --cli-input-json file://catalog-data.json \
+          --region us-east-1
+          
+        echo "Done!"
