@@ -34,10 +34,16 @@ jobs:
         
     - name: Update ECR Public catalog data
       run: |
-        # Create simple dummy catalog data
+        # Extract just the repository name from the alias
+        FULL_ALIAS="${{ secrets.ECR_REPOSITORY_ALIAS }}"
+        REPO_NAME=$(basename "$FULL_ALIAS")
+        echo "Full alias: $FULL_ALIAS"
+        echo "Extracted repository name: $REPO_NAME"
+        
+        # Create catalog data with extracted repository name
         cat > catalog-data.json << EOF
         {
-          "repositoryName": "valkey-test",
+          "repositoryName": "$REPO_NAME",
           "catalogData": {
             "description": "Auto-updated container image",
             "aboutText": "## About\n\nThis is an automatically updated container image.",
