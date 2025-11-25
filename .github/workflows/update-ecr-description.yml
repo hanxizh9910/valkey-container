@@ -37,6 +37,12 @@ jobs:
         # Extract just the repository name from the alias
         FULL_ALIAS="${{ secrets.ECR_REPOSITORY_ALIAS }}"
         REPO_NAME=$(basename "$FULL_ALIAS")
+
+        # Debug without showing the secret
+        echo "Length of full alias: ${#FULL_ALIAS}"
+        echo "Length of extracted name: ${#REPO_NAME}"
+        echo "Expected repository name: valkey-test"
+        echo "Do they match? $([ "$REPO_NAME" = "valkey-test" ] && echo "YES" || echo "NO")"
         echo "Full alias: $FULL_ALIAS"
         echo "Extracted repository name: $REPO_NAME"
         
