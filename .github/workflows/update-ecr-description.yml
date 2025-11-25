@@ -20,7 +20,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
+    - name: Debug repository info
+      run: |
+        echo "Repository alias from secret: ${{ secrets.ECR_REPOSITORY_ALIAS }}"
+        echo "Expected ARN: arn:aws:ecr-public::ACCOUNTNUMBER:repository/${{ secrets.ECR_REPOSITORY_ALIAS }}"
+          
     - name: Configure AWS credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
