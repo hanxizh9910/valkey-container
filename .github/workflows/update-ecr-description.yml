@@ -28,18 +28,15 @@ jobs:
         aws-region: us-east-1
 
     - name: Parse README.md and extract usage/about text
-      id: parsed
       run: |
-        python3 .github/scripts/extract_sections.py dockerhub-description.md > parsed.json
-        echo "parsed=$(cat parsed.json | jq -c .)" >> $GITHUB_OUTPUT
+        python3 .github/scripts/extract_sections.py dockerhub-description.md
 
     - name: Update ECR Public catalog data
       run: |
         REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
-
-        ABOUT_JSON=$(echo "${{ fromJson(steps.parsed.outputs.parsed).about }}" | jq -Rs .)
-        USAGE_JSON=$(echo "${{ fromJson(steps.parsed.outputs.parsed).usage }}" | jq -Rs .)
-
+        
+        # The ABOUT_JSON and USAGE_JSON variables come from the Python script
+        # that wrote them to $GITHUB_ENV in the previous step
         cat > catalog-data.json <<EOF
         {
           "repositoryName": "$REPO_NAME",
@@ -51,6 +48,7 @@ jobs:
           }
         }
         EOF
+        
         aws ecr-public put-repository-catalog-data \
           --cli-input-json file://catalog-data.json \
           --region us-east-1
