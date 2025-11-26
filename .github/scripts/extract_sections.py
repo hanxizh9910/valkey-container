@@ -9,9 +9,13 @@ with open(sys.argv[1], "r") as f:
 
 # Split by top-level headings (# ...)
 sections = re.split(r"(?m)^# ", md)
+
+# The first chunk (before first "# ") contains the auto-generated notice
+preamble = sections[0].strip() if sections[0].strip() else ""
+
 parsed = {}
 
-# The first chunk before the first "# " is useless, skip it
+# Process the actual sections (skip the preamble at index 0)
 for sec in sections[1:]:
     # Extract title (text until newline)
     title, _, content = sec.partition("\n")
@@ -27,16 +31,21 @@ usage_sections = [
 usage_text = ""
 about_text = ""
 
+# Start about_text with the preamble (auto-generated notice)
+if preamble:
+    about_text = f"{preamble}\n\n"
+
+# Add sections to appropriate text blocks
 for title, content in parsed.items():
     if title in usage_sections:
         usage_text += f"# {title}\n{content}\n\n"
     else:
         about_text += f"# {title}\n{content}\n\n"
 
-# Write to GitHub Actions environment file instead of stdout
+# Write to GitHub Actions environment file
 with open(os.environ['GITHUB_ENV'], 'a') as f:
     f.write(f"ABOUT_JSON={json.dumps(about_text.strip())}\n")
     f.write(f"USAGE_JSON={json.dumps(usage_text.strip())}\n")
 
-# Optional: Print confirmation (this won't interfere with the environment)
+# Optional: Print confirmation
 print("Successfully parsed markdown and wrote to environment variables")
