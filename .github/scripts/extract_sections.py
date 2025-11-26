@@ -1,6 +1,7 @@
 import sys
 import json
 import re
+import os
 
 # Read entire markdown file
 with open(sys.argv[1], "r") as f:
@@ -32,8 +33,10 @@ for title, content in parsed.items():
     else:
         about_text += f"# {title}\n{content}\n\n"
 
-# Output JSON for GitHub Actions
-print(json.dumps({
-    "usage": usage_text.strip(),
-    "about": about_text.strip()
-}))
+# Write to GitHub Actions environment file instead of stdout
+with open(os.environ['GITHUB_ENV'], 'a') as f:
+    f.write(f"ABOUT_JSON={json.dumps(about_text.strip())}\n")
+    f.write(f"USAGE_JSON={json.dumps(usage_text.strip())}\n")
+
+# Optional: Print confirmation (this won't interfere with the environment)
+print("Successfully parsed markdown and wrote to environment variables")
