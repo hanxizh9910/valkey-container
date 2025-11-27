@@ -33,6 +33,7 @@ about_text = ""
 
 # Start about_text with the preamble (auto-generated notice)
 if preamble:
+    preamble = re.sub(r'^##\s*', '', preamble, flags=re.MULTILINE)
     about_text = f"{preamble}\n\n"
 
 # Add sections to appropriate text blocks
