@@ -171,7 +171,8 @@ jobs:
           load: false
 
   update-ecr-description:
-    if: |
+    if: 
+      github.repository == 'valkey-io/valkey-container' &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0]
