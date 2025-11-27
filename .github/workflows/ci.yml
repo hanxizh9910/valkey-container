@@ -171,16 +171,18 @@ jobs:
           load: false
 
   update-ecr-description:
-    if: 
-      github.repository == 'valkey-io/valkey-container' &&
-      github.event_name == 'push' &&
+    if: |
+      (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
-      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0]
+      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
       - generate-jobs
       - test
       - build_and_push
     name: Update ECR Description
+    permissions:
+      id-token: write
+      contents: read
     uses: ./.github/workflows/update-ecr-description.yml
     secrets:
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
