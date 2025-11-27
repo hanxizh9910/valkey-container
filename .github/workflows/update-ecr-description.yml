@@ -27,7 +27,7 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-east-1
 
-    - name: Parse README.md and extract usage/about text
+    - name: Parse markdown file and extract usage/about text
       run: |
         python3 .github/scripts/extract_sections.py dockerhub-description.md
 
