@@ -47,6 +47,3 @@ for title, content in parsed.items():
 with open(os.environ['GITHUB_ENV'], 'a') as f:
     f.write(f"ABOUT_JSON={json.dumps(about_text.strip())}\n")
     f.write(f"USAGE_JSON={json.dumps(usage_text.strip())}\n")
-
-# Optional: Print confirmation
-print("Successfully parsed markdown and wrote to environment variables")
