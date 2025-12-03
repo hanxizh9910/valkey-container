@@ -54,10 +54,12 @@ if preamble:
 
 # Add sections to appropriate text blocks
 for title, content in parsed.items():
+    heading_prefix = "##" if title == "Latest unstable" else "#"
+
     if title in usage_sections:
-        usage_text += f"# {title}\n{content}\n\n"
+        usage_text += f"{heading_prefix} {title}\n{content}\n\n"
     else:
-        about_text += f"# {title}\n{content}\n\n"
+        about_text += f"{heading_prefix} {title}\n{content}\n\n"
 
 # Write to GitHub Actions environment file
 with open(os.environ['GITHUB_ENV'], 'a') as f:
