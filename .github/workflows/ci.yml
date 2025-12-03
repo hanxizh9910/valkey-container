@@ -56,7 +56,7 @@ jobs:
             else
               changed_files=$(git diff --name-only HEAD~1 HEAD)
             fi
-            if echo $changed_files | grep -qE "^(versions\.json|[0-9]+\.[0-9]+/|unstable/)"; then
+            if printf "%s\n" "$changed_files" | grep -qE "^(versions\.json|[0-9]+\.[0-9]+/|unstable/)"; then
               changed_versions=$(echo $changed_files | grep -oE "[0-9]+\.[0-9]+|unstable" | sort -u | tr '\n' '|' | sed 's/|$//')
               if [[ -n "$changed_versions" ]]; then
                 publish_strategy=$(jq -c --arg versions "$changed_versions" '{"fail-fast": .["fail-fast"],"matrix":{"include":[ .matrix.include[]|select(.meta.entries[0].directory | test($versions))]}}' <<<"$publish_strategy")
@@ -110,7 +110,7 @@ jobs:
       contents: read
       packages: write
     steps:
-        # Tags are created by generate.sh in the format `valkey-container:<tag>`
+        # Tags are created by generate.sh in the format `valkey-container:<tag>` test test
         # For Docker Hub this step modifies the tags to `account/valkey:<tag>` to be provided to build-push github action.
         # For GitHub Container Registry this step modifies the tags to `ghcr.io/<repo-owner>/valkey:<tag>` to be provided to build-push github action.
       - name: Modify Tags
