@@ -9,8 +9,8 @@ with open(sys.argv[1], "r") as f:
 
 # Normalize underlined headings
 md = re.sub(
-    r"(?m)^([A-Za-z0-9 \[\]\(\)]+)\n[-]{3,}\s*$",
-    r"## \1",
+    r'(?m)^[ \t]*(.+?)\s*\r?\n[ \t]*-{3,}[ \t]*\r?\n',
+    r'## \1\n\n',
     md
 )
 
