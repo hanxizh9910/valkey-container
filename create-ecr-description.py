@@ -7,6 +7,13 @@ import os
 with open(sys.argv[1], "r") as f:
     md = f.read()
 
+# Normalize underlined headings
+md = re.sub(
+    r"(?m)^([A-Za-z0-9 \[\]\(\)]+)\n[-]{3,}\s*$",
+    r"## \1",
+    md
+)
+
 # Split by top-level headings (# ...)
 sections = re.split(r"(?m)^# ", md)
 
@@ -20,6 +27,15 @@ for sec in sections[1:]:
     # Extract title (text until newline)
     title, _, content = sec.partition("\n")
     title = title.strip()
+
+    if "## Latest unstable" in content:
+        sub_parts = content.split("## Latest unstable", 1)
+        main_content = sub_parts[0].strip()
+        unstable_content = sub_parts[1].strip()
+        parsed[title] = main_content
+        parsed["Latest unstable"] = unstable_content
+        continue
+
     parsed[title] = content.strip()
 
 # Sections we want in usage
