@@ -177,8 +177,8 @@ jobs:
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update ECR Description
     permissions:
       id-token: write
