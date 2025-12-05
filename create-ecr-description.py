@@ -17,12 +17,8 @@ md = re.sub(
 # Split by top-level headings (# ...)
 sections = re.split(r"(?m)^# ", md)
 
-# The first chunk (before first "# ") contains the auto-generated notice
-preamble = sections[0].strip() if sections[0].strip() else ""
-
 parsed = {}
 
-# Process the actual sections (skip the preamble at index 0)
 for sec in sections[1:]:
     # Extract title (text until newline)
     title, _, content = sec.partition("\n")
@@ -46,11 +42,6 @@ usage_sections = [
 
 usage_text = ""
 about_text = ""
-
-# Start about_text with the preamble (auto-generated notice)
-if preamble:
-    preamble = re.sub(r'^##\s*', '', preamble, flags=re.MULTILINE)
-    about_text = f"{preamble}\n\n"
 
 # Add sections to appropriate text blocks
 for title, content in parsed.items():
