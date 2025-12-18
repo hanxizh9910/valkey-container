@@ -209,7 +209,7 @@ jobs:
             # Write the test_strategy to bashbrew_output.json
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python automate_docker_description.py bashbrew_output.json dockerhub-description-template.md dockerhub-description.md
-            rm valkey-container/bashbrew_output.json
+            # rm valkey-container/bashbrew_output.json
             # cd valkey-container
             # git add .
             # # Only commit if there are changes
