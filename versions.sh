@@ -28,7 +28,7 @@ fi
 versions=( "${versions[@]%/}" )
 
 packages="$(
-	wget -qO- 'https://github.com/valkey-io/valkey-hashes/raw/main/README' \
+	wget -qO- 'https://github.com/hanxizh9910/valkey-hashes/raw/main/README' \
 	| jq -csR '
 		rtrimstr("\n")
 		| split("\n")
