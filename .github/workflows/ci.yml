@@ -197,8 +197,8 @@ jobs:
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update Docker Hub Description File
     runs-on: ubuntu-latest
     steps:
@@ -235,8 +235,8 @@ jobs:
     needs:
       - update-dockerhub-description-file
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update DockerHub Description
     uses: ./.github/workflows/update-dockerhub-docs.yml
     secrets:
