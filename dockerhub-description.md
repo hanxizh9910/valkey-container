@@ -9,8 +9,8 @@
 # Supported tags and respective `Dockerfile` links
 
 ## Official releases
-- [`9.0.1`, `9.0`, `9`, `latest`, `9.0.1-trixie`, `9.0-trixie`, `9-trixie`, `trixie`](https://github.com/valkey-io/valkey-container/blob/master/9.0/debian/Dockerfile)
-- [`9.0.1-alpine`, `9.0-alpine`, `9-alpine`, `alpine`, `9.0.1-alpine3.23`, `9.0-alpine3.23`, `9-alpine3.23`, `alpine3.23`](https://github.com/valkey-io/valkey-container/blob/master/9.0/alpine/Dockerfile)
+- [`9.0.2`, `9.0`, `9`, `latest`, `9.0.2-trixie`, `9.0-trixie`, `9-trixie`, `trixie`](https://github.com/valkey-io/valkey-container/blob/master/9.0/debian/Dockerfile)
+- [`9.0.2-alpine`, `9.0-alpine`, `9-alpine`, `alpine`, `9.0.2-alpine3.23`, `9.0-alpine3.23`, `9-alpine3.23`, `alpine3.23`](https://github.com/valkey-io/valkey-container/blob/master/9.0/alpine/Dockerfile)
 - [`8.1.5`, `8.1`, `8`, `8.1.5-trixie`, `8.1-trixie`, `8-trixie`](https://github.com/valkey-io/valkey-container/blob/master/8.1/debian/Dockerfile)
 - [`8.1.5-alpine`, `8.1-alpine`, `8-alpine`, `8.1.5-alpine3.23`, `8.1-alpine3.23`, `8-alpine3.23`](https://github.com/valkey-io/valkey-container/blob/master/8.1/alpine/Dockerfile)
 - [`8.0.6`, `8.0`, `8.0.6-trixie`, `8.0-trixie`](https://github.com/valkey-io/valkey-container/blob/master/8.0/debian/Dockerfile)
