@@ -203,16 +203,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate bashbrew output
-        id: generate-bashbrew
-        run: |
-          BASHBREW_SCRIPTS=/home/runner/work/_actions/docker-library/bashbrew/v0.1.13/scripts
-          "$BASHBREW_SCRIPTS/github-actions/generate.sh" > bashbrew_output.json
-          echo "bashbrew_content=$(cat bashbrew_output.json)" >> $GITHUB_OUTPUT
-
       - name: Update Docker Hub Description File
         id: dockerhub-description-update
         run: |
+            # Write the test_strategy to bashbrew_output.json
+            echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python automate_docker_description.py bashbrew_output.json dockerhub-description-template.md dockerhub-description.md
             rm valkey-container/bashbrew_output.json
             # cd valkey-container
