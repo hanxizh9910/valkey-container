@@ -1,5 +1,5 @@
 <!-- DOCKERHUB_START -->
-# Quick reference docker
+# Quick reference
 
 -	**Maintained by**:
 	[the Valkey Community](https://github.com/valkey-io/valkey-container)
@@ -117,7 +117,7 @@ As for any pre-built image usage, it is the image user's responsibility to ensur
 ---
 
 <!-- ECR_START -->
-# Quick reference ECR
+# Quick reference
 
 -	**Maintained by**:
 	[the Valkey Community](https://github.com/valkey-io/valkey-container)
