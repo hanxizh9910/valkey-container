@@ -1,10 +1,16 @@
 import json
 import sys
-import re
 import logging
 from datetime import datetime
 
 logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Repository paths for different registries
+DOCKERHUB_REPO_PATH = "valkey/valkey"
+DOCKERHUB_IMAGE = "docker.io/valkey/valkey"
+
+ECR_REPO_PATH = "public.ecr.aws/valkey/valkey"
+ECR_IMAGE = "public.ecr.aws/valkey/valkey"
 
 def clean_tag(tag: str) -> str:
     if ":" in tag:
@@ -39,18 +45,9 @@ def format_tag_line(entry: dict) -> str:
         logging.error(f"Unexpected error in format_tag_line: {e}")
         raise
 
-def extract_section(template: str, start_marker: str, end_marker: str) -> str:
-    """Extract content between markers."""
-    pattern = f"{start_marker}(.*?){end_marker}"
-    match = re.search(pattern, template, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    return ""
-
-def process_template(template_content: str, data: dict) -> tuple:
-    """Process template and return (dockerhub_content, ecr_content)."""
+def process_template(template_content: str, data: dict, container_repo_path: str, container_image: str) -> str:
+    """Process template and return content with placeholders filled."""
     
-    # Categorize entries
     official_releases = []
     release_candidates = []
     latest_unstable = []
@@ -68,26 +65,16 @@ def process_template(template_content: str, data: dict) -> tuple:
     rc_section = "" if not release_candidates else f"\n## Release candidates\n{chr(10).join(release_candidates)}"
     unstable_section = "" if not latest_unstable else f"\n## Latest unstable\n{chr(10).join(latest_unstable)}"
 
-    # Extract sections
-    dockerhub_template = extract_section(template_content, "<!-- DOCKERHUB_START -->", "<!-- DOCKERHUB_END -->")
-    ecr_template = extract_section(template_content, "<!-- ECR_START -->", "<!-- ECR_END -->")
-
-    # Fill placeholders for each section
-    dockerhub_content = dockerhub_template.format(
+    content = template_content.format(
         update_date=datetime.now().strftime("%Y-%m-%d"),
         official_releases=official_releases_section,
         release_candidates_section=rc_section,
-        unstable_section=unstable_section
+        unstable_section=unstable_section,
+        container_repo_path=container_repo_path,
+        container_image=container_image
     )
 
-    ecr_content = ecr_template.format(
-        update_date=datetime.now().strftime("%Y-%m-%d"),
-        official_releases=official_releases_section,
-        release_candidates_section=rc_section,
-        unstable_section=unstable_section
-    )
-
-    return dockerhub_content, ecr_content
+    return content
 
 def update_docker_description(json_file: str, template_file: str) -> None:
     try:
@@ -97,14 +84,14 @@ def update_docker_description(json_file: str, template_file: str) -> None:
         with open(template_file, 'r') as f:
             template = f.read()
 
-        dockerhub_content, ecr_content = process_template(template, data)
-
-        # Write Docker Hub description
+        # Generate Docker Hub description
+        dockerhub_content = process_template(template, data, DOCKERHUB_REPO_PATH, DOCKERHUB_IMAGE)
         with open("dockerhub-description.md", 'w') as f:
             f.write(dockerhub_content)
         print("Generated dockerhub-description.md")
 
-        # Write ECR description
+        # Generate ECR description
+        ecr_content = process_template(template, data, ECR_REPO_PATH, ECR_IMAGE)
         with open("ecr-description.md", 'w') as f:
             f.write(ecr_content)
         print("Generated ecr-description.md")
