@@ -93,7 +93,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
-        output_file = "docker-ecr-description.md"
+        output_file = "dockerhub-ecr-description.md"
         update_docker_description(sys.argv[1], sys.argv[2], output_file)
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")
