@@ -1,10 +1,10 @@
-# Quick reference
+# Quick reference tests
 
 -	**Maintained by**:
 	[the Valkey Community](https://github.com/valkey-io/valkey-container)
 
 -	**Where to get help**:
-	Please open an Issue stating your question on [the Valkey Community](https://github.com/valkey-io/valkey-container/issues). test test 
+	Please open an Issue stating your question on [the Valkey Community](https://github.com/valkey-io/valkey-container/issues).
 
 # Supported tags and respective `Dockerfile` links
 
