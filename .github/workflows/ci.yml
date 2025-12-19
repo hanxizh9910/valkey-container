@@ -193,7 +193,7 @@ jobs:
       - name: Upload description file
         uses: actions/upload-artifact@v4
         with:
-          name: dockerhub-description
+          name: dockerhub-ecr-description
           path: dockerhub-ecr-description.md
 
   update-ecr-description:
