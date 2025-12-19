@@ -30,7 +30,7 @@ jobs:
     - name: Download description file
       uses: actions/download-artifact@v4
       with:
-        name: dockerhub-description
+        name: dockerhub-ecr-description
         path: .  # This overwrites the old file
 
     - name: Parse markdown file and extract usage/about text
