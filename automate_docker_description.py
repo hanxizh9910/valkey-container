@@ -87,13 +87,14 @@ def update_docker_description(json_file: str, template_file: str, output_file: s
         sys.exit(1)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 3:
         logging.error("Invalid number of arguments.")
-        logging.error("Usage: python automate_docker_description.py <json_file> <template_file> <output_file>")
+        logging.error("Usage: python automate_docker_description.py <json_file> <template_file>")
         sys.exit(1)
 
     try:
-        update_docker_description(sys.argv[1], sys.argv[2], sys.argv[3])
+        output_file = "docker-ecr-description.md"
+        update_docker_description(sys.argv[1], sys.argv[2], output_file)
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")
         sys.exit(1)
