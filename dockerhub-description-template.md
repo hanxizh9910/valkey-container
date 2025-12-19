@@ -148,13 +148,13 @@ For the ease of accessing Valkey from other containers via Docker networking, th
 ## Start a valkey instance
 
 ```console
-$ docker run --name some-valkey -d valkey/valkey
+$ docker run --name some-valkey -d public.ecr.aws/valkey/valkey
 ```
 
 ## Start with persistent storage
 
 ```console
-$ docker run --name some-valkey -d valkey/valkey valkey-server --save 60 1 --loglevel warning
+$ docker run --name some-valkey -d public.ecr.aws/valkey/valkey valkey-server --save 60 1 --loglevel warning
 ```
 
 There are several different persistence strategies to choose from. This one will save a snapshot of the DB every 60 seconds if at least 1 write operation was performed (it will also lead to more logs, so the `loglevel` option may be desirable). If persistence is enabled, data is stored in the `/data` directory, which can be mounted using `-v /docker/host/dir:/data` (see [docs.docker volumes](https://docs.docker.com/engine/tutorials/dockervolumes/)).
@@ -162,7 +162,7 @@ There are several different persistence strategies to choose from. This one will
 ## Connecting via `valkey-cli`
 
 ```console
-$ docker run -it --network some-network --rm valkey/valkey valkey-cli -h some-valkey
+$ docker run -it --network some-network --rm public.ecr.aws/valkey/valkey valkey-cli -h some-valkey
 ```
 
 ## Pass additional start arguments with environment variable
@@ -171,7 +171,7 @@ In case you'd like to configure the start arguments of `valkey-server`
 with environment variable, you can pass them with `VALKEY_EXTRA_FLAGS`
 without having to overwrite the CMD:
 ```console
-$ docker run --env VALKEY_EXTRA_FLAGS='--save 60 1 --loglevel warning' valkey/valkey
+$ docker run --env VALKEY_EXTRA_FLAGS='--save 60 1 --loglevel warning' public.ecr.aws/valkey/valkey
 ```
 
 ## Additionally, If you want to use your own valkey.conf ...
@@ -179,7 +179,7 @@ $ docker run --env VALKEY_EXTRA_FLAGS='--save 60 1 --loglevel warning' valkey/va
 You can create your own Dockerfile that adds a valkey.conf from the context into /data/, like so.
 
 ```dockerfile
-FROM valkey/valkey
+FROM public.ecr.aws/valkey/valkey
 COPY valkey.conf /usr/local/etc/valkey/valkey.conf
 CMD [ "valkey-server", "/usr/local/etc/valkey/valkey.conf" ]
 ```
@@ -187,7 +187,7 @@ CMD [ "valkey-server", "/usr/local/etc/valkey/valkey.conf" ]
 Alternatively, you can specify something along the same lines with `docker run` options.
 
 ```console
-$ docker run -v /myvalkey/conf:/usr/local/etc/valkey --name myvalkey valkey/valkey valkey-server /usr/local/etc/valkey/valkey.conf
+$ docker run -v /myvalkey/conf:/usr/local/etc/valkey --name myvalkey public.ecr.aws/valkey/valkey valkey-server /usr/local/etc/valkey/valkey.conf
 ```
 
 Where `/myvalkey/conf/` is a local directory containing your `valkey.conf` file. Using this method means that there is no need for you to have a Dockerfile for your valkey container.
@@ -200,7 +200,7 @@ Valkey supports startup notification to let systemd know it is ready to serve be
 
 ```systemd
 [Container]
-Image=docker.io/valkey/valkey:latest
+Image=public.ecr.aws/valkey/valkey:latest
 Exec=valkey-server --supervised systemd
 Notify=true
 ```
@@ -209,13 +209,13 @@ Notify=true
 
 The `valkey` images come in many flavors, each designed for a specific use case.
 
-## `valkey/valkey:<version>`
+## `public.ecr.aws/valkey/valkey:<version>`
 
 This is the defacto image. If you are unsure about what your needs are, you probably want to use this one. It is designed to be used both as a throw away container (mount your source code and start the container to start your app), as well as the base to build other images off of.
 
 Some of these tags may have names like bookworm in them. These are the suite code names for releases of [Debian](https://wiki.debian.org/DebianReleases) and indicate which release the image is based on. If your image needs to install any additional packages beyond what comes with the image, you'll likely want to specify one of these explicitly to minimize breakage when there are new releases of Debian.
 
-## `valkey/valkey:<version>-alpine`
+## `public.ecr.aws/valkey/valkey:<version>-alpine`
 
 This image is based on the popular [Alpine Linux project](https://alpinelinux.org), available in [the `alpine` official image](https://hub.docker.com/_/alpine). Alpine Linux is much smaller than most distribution base images (~5MB), and thus leads to much slimmer images in general.
 
