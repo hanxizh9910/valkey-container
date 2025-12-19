@@ -172,24 +172,6 @@ jobs:
       #     provenance: false
       #     load: false
 
-  # update-ecr-description:
-  #   if: |
-  #     (github.event_name == 'push' &&
-  #     github.ref == 'refs/heads/mainline' &&
-  #     fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
-  #   needs:
-  #     - generate-jobs
-  #     - test
-  #     - build_and_push
-  #   name: Update ECR Description
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   uses: ./.github/workflows/update-ecr-description.yml
-  #   secrets:
-  #     AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-  #     ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
-
   update-dockerhub-description-file:
     if: |
       (github.event_name == 'push' &&
@@ -206,22 +188,10 @@ jobs:
       - name: Update Docker Hub Description File
         id: dockerhub-description-update
         run: |
-            # Write the test_strategy to bashbrew_output.json
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python automate_docker_description.py bashbrew_output.json dockerhub-description-template.md dockerhub-description.md
-            # rm valkey-container/bashbrew_output.json
-            # cd valkey-container
-            # git add .
-            # # Only commit if there are changes
-            # if ! git diff --cached --quiet; then
-            #   git commit -m "Update Docker Hub description for version ${{ inputs.version }}" -s
-            #   echo "has_changes=true" >> $GITHUB_OUTPUT
-            # else
-            #   echo "No changes to commit for Docker Hub description - PR will not be created."
-            #   echo "has_changes=false" >> $GITHUB_OUTPUT
-            # fi
 
-  update-dockerhub-description:
+  update-ecr-description:
     if: |
       (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
@@ -231,9 +201,28 @@ jobs:
       - generate-jobs
       # - test
       # - build_and_push
-    name: Update DockerHub Description
-    uses: ./.github/workflows/update-dockerhub-docs.yml
+    name: Update ECR Description
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/update-ecr-description.yml
     secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
+
+  # update-dockerhub-description:
+  #   if: |
+  #     (github.event_name == 'push' &&
+  #     github.ref == 'refs/heads/mainline' &&
+  #     fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
+  #   needs:
+  #     - update-dockerhub-description-file
+  #     - generate-jobs
+  #     # - test
+  #     # - build_and_push
+  #   name: Update DockerHub Description
+  #   uses: ./.github/workflows/update-dockerhub-docs.yml
+  #   secrets:
+  #     DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  #     DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
