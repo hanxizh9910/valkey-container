@@ -26,22 +26,6 @@ jobs:
           name: dockerhub-description
           path: .
       
-      - name: Debug secrets (safe)
-        run: |
-          echo "=== DOCKERHUB_REPOSITORY checks ==="
-          REPO="${{ secrets.DOCKERHUB_REPOSITORY }}"
-          echo "Length: ${#REPO}"
-          if [ -z "$REPO" ]; then
-            echo "❌ REPO is EMPTY!"
-          else
-            echo "✅ REPO is set"
-          fi
-          if [[ "$REPO" == *"/"* ]]; then
-            echo "✅ Contains '/'"
-          else
-            echo "❌ Missing '/' - should be namespace/repo format"
-          fi
-      
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
