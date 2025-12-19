@@ -19,6 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Download description file
+        uses: actions/download-artifact@v4
+        with:
+          name: dockerhub-description
+          path: .
+      
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
