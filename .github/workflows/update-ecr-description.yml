@@ -30,12 +30,12 @@ jobs:
     - name: Download description file
       uses: actions/download-artifact@v4
       with:
-        name: dockerhub-ecr-description
-        path: .  # This overwrites the old file
+        name: ecr-description
+        path: .
 
     - name: Parse markdown file and extract usage/about text
       run: |
-        python3 create-ecr-description.py dockerhub-ecr-description.md
+        python3 create-ecr-description.py ecr-description.md
 
     - name: Update ECR Public catalog data
       run: |
