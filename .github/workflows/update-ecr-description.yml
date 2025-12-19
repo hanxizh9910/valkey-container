@@ -27,6 +27,12 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-east-1
 
+    - name: Download description file
+      uses: actions/download-artifact@v4
+      with:
+        name: dockerhub-description
+        path: .  # This overwrites the old file
+
     - name: Parse markdown file and extract usage/about text
       run: |
         python3 create-ecr-description.py dockerhub-description.md
