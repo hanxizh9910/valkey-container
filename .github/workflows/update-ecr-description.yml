@@ -35,7 +35,7 @@ jobs:
 
     - name: Parse markdown file and extract usage/about text
       run: |
-        python3 create-ecr-description.py dockerhub-description.md
+        python3 create-ecr-description.py dockerhub-ecr-description.md
 
     - name: Update ECR Public catalog data
       run: |
