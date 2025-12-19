@@ -1,5 +1,5 @@
 <!-- DOCKERHUB_START -->
-# Quick reference
+# Quick reference docker
 
 -	**Maintained by**:
 	[the Valkey Community](https://github.com/valkey-io/valkey-container)

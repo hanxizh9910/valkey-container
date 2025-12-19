@@ -202,6 +202,23 @@ jobs:
           name: ecr-description
           path: ecr-description.md
 
+  update-dockerhub-description:
+    if: |
+      (github.event_name == 'push' &&
+      github.ref == 'refs/heads/mainline' &&
+      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
+    needs:
+      - update-dockerhub-description-file
+      - generate-jobs
+      # - test
+      # - build_and_push
+    name: Update DockerHub Description
+    uses: ./.github/workflows/update-dockerhub-docs.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
+
   update-ecr-description:
     if: |
       (github.event_name == 'push' &&
@@ -220,20 +237,3 @@ jobs:
     secrets:
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
-
-  # update-dockerhub-description:
-  #   if: |
-  #     (github.event_name == 'push' &&
-  #     github.ref == 'refs/heads/mainline' &&
-  #     fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
-  #   needs:
-  #     - update-dockerhub-description-file
-  #     - generate-jobs
-  #     # - test
-  #     # - build_and_push
-  #   name: Update DockerHub Description
-  #   uses: ./.github/workflows/update-dockerhub-docs.yml
-  #   secrets:
-  #     DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  #     DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-  #     DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
