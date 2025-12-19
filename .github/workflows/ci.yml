@@ -172,7 +172,7 @@ jobs:
       #     provenance: false
       #     load: false
 
-  update-dockerhub-description-file:
+  update-dockerhub-ecr-description-file:
     if: |
       (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
@@ -208,7 +208,7 @@ jobs:
       github.ref == 'refs/heads/mainline' &&
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
-      - update-dockerhub-description-file
+      - update-dockerhub-ecr-description-file
       - generate-jobs
       # - test
       # - build_and_push
@@ -225,7 +225,7 @@ jobs:
       github.ref == 'refs/heads/mainline' &&
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
-      - update-dockerhub-description-file
+      - update-dockerhub-ecr-description-file
       - generate-jobs
       # - test
       # - build_and_push
