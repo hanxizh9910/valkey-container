@@ -190,6 +190,11 @@ jobs:
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python automate_docker_description.py bashbrew_output.json dockerhub-description-template.md dockerhub-description.md
+      - name: Upload description file
+        uses: actions/upload-artifact@v4
+        with:
+          name: dockerhub-description
+          path: dockerhub-description.md
 
   update-ecr-description:
     if: |
