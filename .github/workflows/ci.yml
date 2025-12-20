@@ -177,11 +177,11 @@ jobs:
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
       - generate-jobs
-    name: Update Docker Hub Description File
+    name: Update Description File
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Update Docker Hub Description File
+      - name: Update Description File
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python generate-repo-description.py bashbrew_output.json description-template.md
