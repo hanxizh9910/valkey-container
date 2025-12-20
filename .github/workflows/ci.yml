@@ -179,28 +179,32 @@ jobs:
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
       - generate-jobs
-      # - test
-      # - build_and_push
     name: Update Docker Hub Description File
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Update Docker Hub Description File
-        id: dockerhub-description-update
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python automate_docker_description.py bashbrew_output.json dockerhub-description-template.md
+
       - name: Upload Docker Hub description
         uses: actions/upload-artifact@v4
         with:
           name: dockerhub-description
           path: dockerhub-description.md
 
-      - name: Upload ECR description
+      - name: Upload ECR about
         uses: actions/upload-artifact@v4
         with:
-          name: ecr-description
-          path: ecr-description.md
+          name: ecr-about
+          path: ecr-about.md
+
+      - name: Upload ECR usage
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecr-usage
+          path: ecr-usage.md
 
   update-dockerhub-description:
     if: |

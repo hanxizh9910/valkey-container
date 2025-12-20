@@ -1,5 +1,6 @@
 import json
 import sys
+import re
 import logging
 from datetime import datetime
 
@@ -76,6 +77,65 @@ def process_template(template_content: str, data: dict, container_repo_path: str
 
     return content
 
+def parse_ecr_content(md: str) -> tuple:
+    """Parse markdown content and return (about_text, usage_text) for ECR."""
+    
+    # Normalize underlined headings
+    md = re.sub(
+        r'(?m)^[ \t]*(.+?)\s*\r?\n[ \t]*-{3,}[ \t]*\r?\n',
+        r'## \1\n\n',
+        md
+    )
+
+    # Split by top-level headings (# ...)
+    sections = re.split(r"(?m)^# ", md)
+
+    # The first chunk (before first "# ") contains the auto-generated notice
+    preamble = sections[0].strip() if sections[0].strip() else ""
+
+    parsed = {}
+
+    # Process the actual sections (skip the preamble at index 0)
+    for sec in sections[1:]:
+        # Extract title (text until newline)
+        title, _, content = sec.partition("\n")
+        title = title.strip()
+
+        if "## Latest unstable" in content:
+            sub_parts = content.split("## Latest unstable", 1)
+            main_content = sub_parts[0].strip()
+            unstable_content = sub_parts[1].strip()
+            parsed[title] = main_content
+            parsed["Latest unstable"] = unstable_content
+            continue
+
+        parsed[title] = content.strip()
+
+    # Sections we want in usage
+    usage_sections = [
+        "How to use this image",
+        "Image Variants"
+    ]
+
+    usage_text = ""
+    about_text = ""
+
+    # Start about_text with the preamble (auto-generated notice)
+    if preamble:
+        preamble = re.sub(r'^##\s*', '', preamble, flags=re.MULTILINE)
+        about_text = f"{preamble}\n\n"
+
+    # Add sections to appropriate text blocks
+    for title, content in parsed.items():
+        heading_prefix = "##" if title == "Latest unstable" else "#"
+
+        if title in usage_sections:
+            usage_text += f"{heading_prefix} {title}\n{content}\n\n"
+        else:
+            about_text += f"{heading_prefix} {title}\n{content}\n\n"
+
+    return about_text.strip(), usage_text.strip()
+
 def update_docker_description(json_file: str, template_file: str) -> None:
     try:
         with open(json_file, 'r') as f:
@@ -90,11 +150,21 @@ def update_docker_description(json_file: str, template_file: str) -> None:
             f.write(dockerhub_content)
         print("Generated dockerhub-description.md")
 
-        # Generate ECR description
+        # Generate ECR full description
         ecr_content = process_template(template, data, ECR_REPO_PATH, ECR_IMAGE)
-        with open("ecr-description.md", 'w') as f:
-            f.write(ecr_content)
-        print("Generated ecr-description.md")
+        
+        # Parse ECR content into about and usage sections
+        about_text, usage_text = parse_ecr_content(ecr_content)
+        
+        # Write ECR about file
+        with open("ecr-about.md", 'w') as f:
+            f.write(about_text)
+        print("Generated ecr-about.md")
+        
+        # Write ECR usage file
+        with open("ecr-usage.md", 'w') as f:
+            f.write(usage_text)
+        print("Generated ecr-usage.md")
 
     except FileNotFoundError as e:
         logging.error(f"File not found: {e}")
