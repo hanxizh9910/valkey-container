@@ -186,7 +186,7 @@ jobs:
       - name: Update Docker Hub Description File
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
-            python automate_docker_ecr_description.py bashbrew_output.json dockerhub-description-template.md
+            python generate-repo-description.py bashbrew_output.json description-template.md
 
       - name: Upload Docker Hub description
         uses: actions/upload-artifact@v4
