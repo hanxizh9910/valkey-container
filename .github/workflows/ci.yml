@@ -138,39 +138,39 @@ jobs:
   #         username: ${{ secrets.DOCKERHUB_USERNAME }}
   #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Login to GitHub Container Registry
-      #   # Don't log in if we are not pushing changes
-      #   if: env.PUBLISH_IMAGE
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ github.token }}
+  #     - name: Login to GitHub Container Registry
+  #       # Don't log in if we are not pushing changes
+  #       if: env.PUBLISH_IMAGE
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ github.token }}
 
-      # - name: Configure AWS credentials via OIDC
-      #   if: env.PUBLISH_IMAGE
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-      #     aws-region: us-east-1
+  #     - name: Configure AWS credentials via OIDC
+  #       if: env.PUBLISH_IMAGE
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  #         aws-region: us-east-1
 
-      # - name: Login to Amazon ECR Public Gallery
-      #   if: env.PUBLISH_IMAGE
-      #   run: |
-      #     aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+  #     - name: Login to Amazon ECR Public Gallery
+  #       if: env.PUBLISH_IMAGE
+  #       run: |
+  #         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 
-      # - name: Build and push to Docker Hub, Github Container Registry, and Amazon ECR
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
-      #     push: ${{ env.PUBLISH_IMAGE }}
-      #     tags: >-
-      #       ${{ steps.modify_tags.outputs.docker_hub_tags }}
-      #     # tags: >-
-      #     #   ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }},${{ steps.modify_tags.outputs.ecr_tags }}
-      #     platforms: linux/amd64,linux/arm64,linux/arm/v7
-      #     provenance: false
-      #     load: false
+  #     - name: Build and push to Docker Hub, Github Container Registry, and Amazon ECR
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
+  #         push: ${{ env.PUBLISH_IMAGE }}
+  #         tags: >-
+  #           ${{ steps.modify_tags.outputs.docker_hub_tags }}
+  #         # tags: >-
+  #         #   ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }},${{ steps.modify_tags.outputs.ecr_tags }}
+  #         platforms: linux/amd64,linux/arm64,linux/arm/v7
+  #         provenance: false
+  #         load: false
 
   update-dockerhub-ecr-description-file:
     if: |
@@ -186,7 +186,7 @@ jobs:
       - name: Update Docker Hub Description File
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
-            python automate_docker_description.py bashbrew_output.json dockerhub-description-template.md
+            python generate-repo-description.py bashbrew_output.json description-template.md
 
       - name: Upload Docker Hub description
         uses: actions/upload-artifact@v4
@@ -214,8 +214,8 @@ jobs:
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
-      # - test
-      # - build_and_push
+      - test
+      - build_and_push
     name: Update DockerHub Description
     uses: ./.github/workflows/update-dockerhub-docs.yml
     secrets:
@@ -231,8 +231,8 @@ jobs:
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
-      # - test
-      # - build_and_push
+      - test
+      - build_and_push
     name: Update ECR Description
     permissions:
       id-token: write
