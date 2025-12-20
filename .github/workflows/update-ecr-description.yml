@@ -18,36 +18,37 @@ jobs:
     name: Update ECR Public Catalog Data
     
     steps:
-    - name: Checkout Valkey Container Repository
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
     - name: Configure AWS credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         aws-region: us-east-1
 
-    - name: Download description file
+    - name: Download ECR about file
       uses: actions/download-artifact@v4
       with:
-        name: ecr-description
+        name: ecr-about
         path: .
 
-    - name: Parse markdown file and extract usage/about text
-      run: |
-        python3 create-ecr-description.py ecr-description.md
+    - name: Download ECR usage file
+      uses: actions/download-artifact@v4
+      with:
+        name: ecr-usage
+        path: .
 
     - name: Update ECR Public catalog data
       run: |
         REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
         
-        # The ABOUT_JSON and USAGE_JSON variables come from the Python script
-        # that wrote them to $GITHUB_ENV in the previous step
+        # Read files and convert to JSON strings
+        ABOUT_JSON=$(cat ecr-about.md | jq -Rs .)
+        USAGE_JSON=$(cat ecr-usage.md | jq -Rs .)
+        
         cat > catalog-data.json <<EOF
         {
           "repositoryName": "$REPO_NAME",
           "catalogData": {
-            "description": "Auto-updated container image",
+            "description": "Valkey is a high-performance data structure server that primarily serves key/value workloads.",
             "aboutText": $ABOUT_JSON,
             "usageText": $USAGE_JSON,
             "operatingSystems": ["Linux"]
