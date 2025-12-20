@@ -214,8 +214,8 @@ jobs:
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update DockerHub Description
     uses: ./.github/workflows/update-dockerhub-docs.yml
     secrets:
@@ -231,8 +231,8 @@ jobs:
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update ECR Description
     permissions:
       id-token: write
