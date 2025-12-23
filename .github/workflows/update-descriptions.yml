@@ -1,0 +1,73 @@
+name: Update Docker Hub and ECR Descriptions
+
+on:
+  workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      DOCKERHUB_REPOSITORY:
+        required: true
+      AWS_ROLE_TO_ASSUME:
+        required: true
+      ECR_REPOSITORY_NAME:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  update-descriptions:
+    runs-on: ubuntu-latest
+    name: Update Docker Hub and ECR Descriptions
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download description files
+        uses: actions/download-artifact@v4
+        with:
+          name: description-files
+          path: .
+
+      # Docker Hub update
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_REPOSITORY }}
+          readme-filepath: ./dockerhub-description.md
+          short-description: 'Valkey is a high-performance data structure server that primarily serves key/value workloads.'
+
+      # ECR update
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+
+      - name: Update ECR Public catalog data
+        run: |
+          REPO_NAME="${{ secrets.ECR_REPOSITORY_NAME }}"
+          
+          ABOUT_JSON=$(cat ecr-about.md | jq -Rs .)
+          USAGE_JSON=$(cat ecr-usage.md | jq -Rs .)
+          
+          cat > catalog-data.json <<EOF
+          {
+            "repositoryName": "$REPO_NAME",
+            "catalogData": {
+              "description": "Valkey is a high-performance data structure server that primarily serves key/value workloads.",
+              "aboutText": $ABOUT_JSON,
+              "usageText": $USAGE_JSON,
+              "operatingSystems": ["Linux"]
+            }
+          }
+          EOF
+          
+          aws ecr-public put-repository-catalog-data \
+            --cli-input-json file://catalog-data.json \
+            --region us-east-1

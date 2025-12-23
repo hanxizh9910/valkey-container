@@ -195,7 +195,7 @@ jobs:
             ecr-about.md
             ecr-usage.md
 
-  update-dockerhub-description:
+  update-descriptions:
     if: |
       (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
@@ -203,30 +203,14 @@ jobs:
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
-      # - test
-      # - build_and_push
-    name: Update DockerHub Description
-    uses: ./.github/workflows/update-dockerhub-docs.yml
+    name: Update Descriptions
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/update-descriptions.yml
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
-
-  update-ecr-description:
-    if: |
-      (github.event_name == 'push' &&
-      github.ref == 'refs/heads/mainline' &&
-      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
-    needs:
-      - update-dockerhub-ecr-description-file
-      - generate-jobs
-      # - test
-      # - build_and_push
-    name: Update ECR Description
-    permissions:
-      id-token: write
-      contents: read
-    uses: ./.github/workflows/update-ecr-description.yml
-    secrets:
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
