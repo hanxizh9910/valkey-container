@@ -186,6 +186,16 @@ jobs:
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
             python generate-repo-description.py bashbrew_output.json description-template.md
 
+      - name: Verify description files exist
+        run: |
+          for file in dockerhub-description.md ecr-about.md ecr-usage.md; do
+            if [ ! -f "$file" ]; then
+              echo "Error: $file was not created!"
+              exit 1
+            fi
+            echo "$file exists"
+          done
+
       - name: Upload description files
         uses: actions/upload-artifact@v4
         with:
