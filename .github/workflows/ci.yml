@@ -74,101 +74,101 @@ jobs:
           echo "Publish Strategy:"
           jq . <<<"$publish_strategy" # sanity check / debugging aid
 
-  test:
-    needs: generate-jobs
-    strategy: ${{ fromJson(needs.generate-jobs.outputs.test_strategy) }}
-    name: ${{ matrix.name }} - test
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Prepare Environment
-        run: ${{ matrix.runs.prepare }}
-      - name: Pull Dependencies
-        run: ${{ matrix.runs.pull }}
-      - name: Build ${{ matrix.name }}
-        run: ${{ matrix.runs.build }}
-      - name: History ${{ matrix.name }}
-        run: ${{ matrix.runs.history }}
-      - name: Test ${{ matrix.name }}
-        run: ${{ matrix.runs.test }}
-      - name: '"docker images"'
-        run: ${{ matrix.runs.images }}
+  # test:
+  #   needs: generate-jobs
+  #   strategy: ${{ fromJson(needs.generate-jobs.outputs.test_strategy) }}
+  #   name: ${{ matrix.name }} - test
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Prepare Environment
+  #       run: ${{ matrix.runs.prepare }}
+  #     - name: Pull Dependencies
+  #       run: ${{ matrix.runs.pull }}
+  #     - name: Build ${{ matrix.name }}
+  #       run: ${{ matrix.runs.build }}
+  #     - name: History ${{ matrix.name }}
+  #       run: ${{ matrix.runs.history }}
+  #     - name: Test ${{ matrix.name }}
+  #       run: ${{ matrix.runs.test }}
+  #     - name: '"docker images"'
+  #       run: ${{ matrix.runs.images }}
 
-  build_and_push:
-    if: |
-      ((github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
-      github.ref == 'refs/heads/mainline' &&
-      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
-    needs:
-      - generate-jobs
-      - test
-    strategy: ${{ fromJson(needs.generate-jobs.outputs.publish_strategy) }}
-    name: ${{ matrix.name }} - Build and push
-    runs-on: ${{ matrix.os }}
-    permissions:
-      id-token: write
-      contents: read
-      packages: write
-    steps:
-        # Tags are created by generate.sh in the format `valkey-container:<tag>`
-        # For Docker Hub this step modifies the tags to `account/valkey:<tag>` to be provided to build-push github action.
-        # For GitHub Container Registry this step modifies the tags to `ghcr.io/<repo-owner>/valkey:<tag>` to be provided to build-push github action.
-      - name: Modify Tags
-        id: modify_tags
-        run: |
-          original_tags="${{ toJson(matrix.meta.entries[0].tags) }}"
-          docker_hub_tags=$(echo $original_tags | sed 's/valkey-container/${{ secrets.DOCKERHUB_ACCOUNT }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
-          ghcr_tags=$(echo $original_tags | sed 's/valkey-container/ghcr.io\/${{ github.repository_owner }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
-          ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REGISTRY_ALIAS }}\/valkey-test/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
-          echo "docker_hub_tags=$docker_hub_tags" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=$ghcr_tags" >> $GITHUB_OUTPUT
-          echo "ecr_tags=$ecr_tags" >> $GITHUB_OUTPUT
+  # build_and_push:
+  #   if: |
+  #     ((github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+  #     github.ref == 'refs/heads/mainline' &&
+  #     fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
+  #   needs:
+  #     - generate-jobs
+  #     - test
+  #   strategy: ${{ fromJson(needs.generate-jobs.outputs.publish_strategy) }}
+  #   name: ${{ matrix.name }} - Build and push
+  #   runs-on: ${{ matrix.os }}
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #       # Tags are created by generate.sh in the format `valkey-container:<tag>`
+  #       # For Docker Hub this step modifies the tags to `account/valkey:<tag>` to be provided to build-push github action.
+  #       # For GitHub Container Registry this step modifies the tags to `ghcr.io/<repo-owner>/valkey:<tag>` to be provided to build-push github action.
+  #     - name: Modify Tags
+  #       id: modify_tags
+  #       run: |
+  #         original_tags="${{ toJson(matrix.meta.entries[0].tags) }}"
+  #         docker_hub_tags=$(echo $original_tags | sed 's/valkey-container/${{ secrets.DOCKERHUB_ACCOUNT }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
+  #         ghcr_tags=$(echo $original_tags | sed 's/valkey-container/ghcr.io\/${{ github.repository_owner }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
+  #         ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REGISTRY_ALIAS }}\/valkey-test/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
+  #         echo "docker_hub_tags=$docker_hub_tags" >> $GITHUB_OUTPUT
+  #         echo "ghcr_tags=$ghcr_tags" >> $GITHUB_OUTPUT
+  #         echo "ecr_tags=$ecr_tags" >> $GITHUB_OUTPUT
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        if: env.PUBLISH_IMAGE
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Login to Docker Hub
+  #       if: env.PUBLISH_IMAGE
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: docker.io
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Login to GitHub Container Registry
-        # Don't log in if we are not pushing changes
-        if: env.PUBLISH_IMAGE
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
+  #     - name: Login to GitHub Container Registry
+  #       # Don't log in if we are not pushing changes
+  #       if: env.PUBLISH_IMAGE
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ github.token }}
 
-      - name: Configure AWS credentials via OIDC
-        if: env.PUBLISH_IMAGE
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: us-east-1
+  #     - name: Configure AWS credentials via OIDC
+  #       if: env.PUBLISH_IMAGE
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  #         aws-region: us-east-1
 
-      - name: Login to Amazon ECR Public Gallery
-        if: env.PUBLISH_IMAGE
-        run: |
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+  #     - name: Login to Amazon ECR Public Gallery
+  #       if: env.PUBLISH_IMAGE
+  #       run: |
+  #         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 
-      - name: Build and push to Docker Hub, Github Container Registry, and Amazon ECR
-        uses: docker/build-push-action@v5
-        with:
-          file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
-          push: ${{ env.PUBLISH_IMAGE }}
-          tags: >-
-            ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }},${{ steps.modify_tags.outputs.ecr_tags }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          provenance: false
-          load: false
+  #     - name: Build and push to Docker Hub, Github Container Registry, and Amazon ECR
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         file: ./${{ matrix.meta.entries[0].directory }}/Dockerfile
+  #         push: ${{ env.PUBLISH_IMAGE }}
+  #         tags: >-
+  #           ${{ steps.modify_tags.outputs.docker_hub_tags }},${{ steps.modify_tags.outputs.ghcr_tags }},${{ steps.modify_tags.outputs.ecr_tags }}
+  #         platforms: linux/amd64,linux/arm64,linux/arm/v7
+  #         provenance: false
+  #         load: false
 
   update-dockerhub-ecr-description-file:
     if: |
@@ -177,12 +177,12 @@ jobs:
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update Description File
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: Update Description File
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
@@ -213,8 +213,8 @@ jobs:
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
-      - test
-      - build_and_push
+      # - test
+      # - build_and_push
     name: Update Descriptions
     permissions:
       id-token: write

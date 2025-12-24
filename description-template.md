@@ -1,4 +1,4 @@
-# Quick reference test
+# Quick reference
 
 -	**Maintained by**:
 	[the Valkey Community](https://github.com/valkey-io/valkey-container)
