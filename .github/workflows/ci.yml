@@ -182,7 +182,7 @@ jobs:
     name: Update Description File
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: Update Description File
         run: |
             echo '${{ needs.generate-jobs.outputs.test_strategy }}' > bashbrew_output.json   
