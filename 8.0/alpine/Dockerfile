@@ -94,7 +94,7 @@ RUN set -eux; \
 		libgcc \
 	;
 
-# Install valkey built earlier test 1
+# Install valkey built earlier
 COPY --from=build /usr/local /usr/local
 RUN mkdir /data && \
 	chown valkey:valkey /data && \
