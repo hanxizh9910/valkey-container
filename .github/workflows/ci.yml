@@ -27,6 +27,7 @@ jobs:
     outputs:
       test_strategy: ${{ steps.generate-jobs.outputs.test_strategy }}
       publish_strategy: ${{ steps.generate-jobs.outputs.publish_strategy }}
+      publish_image: ${{ steps.check-secrets.outputs.publish_image }}
     steps:
       - uses: actions/checkout@v4
         with:
