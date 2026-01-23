@@ -32,6 +32,10 @@ jobs:
         with:
           fetch-depth: 2
       - uses: docker-library/bashbrew@v0.1.13
+      - id: check-secrets
+        name: Output publish_image for update description jobs
+        run: |
+          echo "publish_image=$PUBLISH_IMAGE" >> "$GITHUB_OUTPUT"
       - id: generate-jobs
         name: Generate Jobs
         run: |
@@ -175,7 +179,8 @@ jobs:
     if: |
       (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
-      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
+      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0] && 
+      needs.generate-jobs.outputs.publish_image == 'true')
     needs:
       - generate-jobs
       - test
@@ -210,7 +215,8 @@ jobs:
     if: |
       (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
-      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
+      fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0] && 
+      needs.generate-jobs.outputs.publish_image == 'true')
     needs:
       - update-dockerhub-ecr-description-file
       - generate-jobs
