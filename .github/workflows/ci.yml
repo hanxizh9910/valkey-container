@@ -173,7 +173,7 @@ jobs:
 
   update-dockerhub-ecr-description-file:
     if: |
-      (env.PUBLISH_IMAGE == 'true' && github.event_name == 'push' &&
+      (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
@@ -208,7 +208,7 @@ jobs:
 
   update-descriptions:
     if: |
-      (env.PUBLISH_IMAGE == 'true' && github.event_name == 'push' &&
+      (github.event_name == 'push' &&
       github.ref == 'refs/heads/mainline' &&
       fromJson(needs.generate-jobs.outputs.publish_strategy).matrix.include[0])
     needs:
