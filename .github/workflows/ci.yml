@@ -124,7 +124,7 @@ jobs:
           original_tags="${{ toJson(matrix.meta.entries[0].tags) }}"
           docker_hub_tags=$(echo $original_tags | sed 's/valkey-container/${{ secrets.DOCKERHUB_ACCOUNT }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
           ghcr_tags=$(echo $original_tags | sed 's/valkey-container/ghcr.io\/${{ github.repository_owner }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
-          ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REGISTRY_ALIAS }}\/valkey-test/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
+          ecr_tags=$(echo $original_tags | sed 's/valkey-container/public.ecr.aws\/${{ secrets.ECR_REGISTRY_ALIAS }}\/valkey/g'| sed 's/\[ *//; s/ *\]//; s/ //g')
           echo "docker_hub_tags=$docker_hub_tags" >> $GITHUB_OUTPUT
           echo "ghcr_tags=$ghcr_tags" >> $GITHUB_OUTPUT
           echo "ecr_tags=$ecr_tags" >> $GITHUB_OUTPUT
