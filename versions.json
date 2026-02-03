@@ -53,5 +53,16 @@
     "alpine": {
       "version": "3.23"
     }
+  },
+  "11.0": {
+    "version": "11.0.0",
+    "url": "https://github.com/hanxizh9910/valkey/archive/refs/tags/11.0.0.tar.gz",
+    "sha256": "4328585dc5eb7de68d6f73e2d8138316ad8a264c835ea1f97afc0d288b0bdc18",
+    "debian": {
+      "version": "trixie"
+    },
+    "alpine": {
+      "version": "3.23"
+    }
   }
 }
