@@ -55,9 +55,9 @@
     }
   },
   "12.0": {
-    "version": "12.0.0",
-    "url": "https://github.com/hanxizh9910/valkey/archive/refs/tags/12.0.0.tar.gz",
-    "sha256": "55d01f9686800fa6b7b9aa88ccc263725cbe41574f7ca955a87d0e60a3d9da48",
+    "version": "12.0.1-rc2",
+    "url": "https://github.com/hanxizh9910/valkey/archive/refs/tags/12.0.1-rc2.tar.gz",
+    "sha256": "4f6eb5722c161e39a16883f62dbead8cbadd6aeea7b95fbbe0bd21fd867d4623",
     "debian": {
       "version": "trixie"
     },
