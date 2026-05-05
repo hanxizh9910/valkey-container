@@ -23,7 +23,21 @@ RUN set -eux; \
 		make \
 		musl-dev \
 		openssl-dev \
+		git \
+		autoconf \
+		automake \
+		libtool \
 	; \
+# build libbacktrace from source (not available as Alpine package)
+# pinned to commit 96664e69b1ecdb76e824be1d9e8f475b76dd08cf (2026-05-03)
+	git clone https://github.com/ianlancetaylor/libbacktrace.git /tmp/libbacktrace; \
+	cd /tmp/libbacktrace; \
+	git reset --hard 96664e69b1ecdb76e824be1d9e8f475b76dd08cf; \
+	./configure --prefix=/usr; \
+	make -j "$(nproc)"; \
+	make install; \
+	cd /; \
+	rm -rf /tmp/libbacktrace; \
 {{ ) else ( -}}
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
@@ -92,7 +106,7 @@ RUN set -eux; \
 	export BUILD_TLS=yes; \
 {{ ) end -}}
 {{ if env.variant == "alpine" then ( -}}
-	\
+	export USE_LIBBACKTRACE=yes; \
 {{ ) else ( -}}
 	export USE_SYSTEMD=yes; \
 {{ ) end -}}
@@ -174,6 +188,10 @@ RUN set -eux; \
 
 # Install valkey built earlier
 COPY --from=build /usr/local /usr/local
+{{ if env.variant == "alpine" then ( -}}
+# copy libbacktrace for backtrace support on musl
+COPY --from=build /usr/lib/libbacktrace.so* /usr/lib/
+{{ ) else "" end -}}
 RUN mkdir /data && \
 	chown valkey:valkey /data && \
 	chmod 1777 /data && \
