@@ -23,7 +23,21 @@ RUN set -eux; \
 		make \
 		musl-dev \
 		openssl-dev \
+		git \
+		autoconf \
+		automake \
+		libtool \
 	; \
+# build libbacktrace from source (not available as Alpine package)
+# pinned to commit 96664e69b1ecdb76e824be1d9e8f475b76dd08cf (2026-05-03)
+	git clone https://github.com/ianlancetaylor/libbacktrace.git /tmp/libbacktrace; \
+	cd /tmp/libbacktrace; \
+	git reset --hard 96664e69b1ecdb76e824be1d9e8f475b76dd08cf; \
+	./configure --prefix=/usr; \
+	make -j "$(nproc)"; \
+	make install; \
+	cd /; \
+	rm -rf /tmp/libbacktrace; \
 	\
 			echo "$VALKEY_DOWNLOAD_SHA *valkey.tar.gz" | sha256sum -c -; \
 		\
@@ -56,7 +70,7 @@ RUN set -eux; \
 	\
 	echo "Version 9.1.0-rc1 is 8.1 or higher - enabling USE_FAST_FLOAT"; \
 			export BUILD_TLS=yes USE_FAST_FLOAT=yes; \
-	\
+	export USE_LIBBACKTRACE=yes; \
 	make -C /usr/src/valkey -j "$(nproc)" all; \
 	make -C /usr/src/valkey install; \
 	\
@@ -97,10 +111,14 @@ RUN set -eux; \
 
 # Install valkey built earlier
 COPY --from=build /usr/local /usr/local
+# copy libbacktrace for backtrace support on musl
+COPY --from=build /usr/lib/libbacktrace.so* /usr/lib/
 RUN mkdir /data && \
 	chown valkey:valkey /data && \
+	chmod 1777 /data && \
 	mkdir -p /run/valkey && \
 	chown valkey:valkey /run/valkey && \
+	chmod 1777 /run/valkey && \
 	valkey-cli --version && \
 	valkey-server --version
 WORKDIR /data
