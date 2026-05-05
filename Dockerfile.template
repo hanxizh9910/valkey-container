@@ -29,8 +29,10 @@ RUN set -eux; \
 		libtool \
 	; \
 # build libbacktrace from source (not available as Alpine package)
+# pinned to commit 96664e69b1ecdb76e824be1d9e8f475b76dd08cf (2026-05-03)
 	git clone --depth 1 https://github.com/ianlancetaylor/libbacktrace.git /tmp/libbacktrace; \
 	cd /tmp/libbacktrace; \
+	git checkout 96664e69b1ecdb76e824be1d9e8f475b76dd08cf; \
 	./configure --prefix=/usr; \
 	make -j "$(nproc)"; \
 	make install; \
